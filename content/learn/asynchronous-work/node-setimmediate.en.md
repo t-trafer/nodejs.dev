@@ -36,3 +36,8 @@ Here is an example to show the order between `setImmediate()`, `process.nextTick
 </iframe>
 
 This code will first call `start()`, then call `foo()` in `process.nextTick queue`. After that, it will handle `promises microtask queue`, which prints `bar` and adds `zoo()` in `process.nextTick queue` at the same time. Then it will call `zoo()` which has just been added. In the end, the `baz()` in `macrotask queue` is called.
+<Alert>
+Although process.nextTick queue takes priority when it comes to execution, microtask queue and process.nextTick queue always finish till completion. i.e., if microtask queue schedules another microtask and a process.nextTick within it, microtask will get executed first before shifting execution phase to nextTick.
+This is especially interesting when node is run as ESM instead of commonJS, in which, <a href="https://github.com/nodejs/node/blob/5e98a7432793c84efe504d551bb46dcfe2c04c09/lib/internal/modules/esm/module_job.js#L192" target="_blank">scripts are actually evaluated from an async/await function</a> and hence, in microtask phase.
+<a href="https://medium.com/@nileshjha2k/nodejs-an-interesting-case-where-microtasks-runs-before-process-nexttick-b729dd9a5ca3" target="_blank">Check this medium post about this!</a>
+</Alert>
